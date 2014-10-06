@@ -15,3 +15,4 @@ if (CMAKE_COMPILER_IS_GNUCC OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
 endif()
 
 add_executable(resistive_loops resistive_loops.cpp)
+add_executable(floating_nodes floating_nodes.cpp)
