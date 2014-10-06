@@ -14,4 +14,4 @@ if (CMAKE_COMPILER_IS_GNUCC OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
   add_definitions(-std=c++0x)             # enable C++11
 endif()
 
-add_executable(graph_analysis graph_analysis.cpp)
+add_executable(resistive_loops resistive_loops.cpp)
