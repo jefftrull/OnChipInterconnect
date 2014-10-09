@@ -82,7 +82,7 @@ int main() {
 
     // perform DFS with loop visitor on filtered (resistor-only) graph
     typedef filtered_graph<ckt_graph_t, resistors_only> resonly_graph_t;
-    filtered_graph<ckt_graph_t, resistors_only> res_graph(r_loop, resistors_only(&r_loop));
+    resonly_graph_t res_graph(r_loop, resistors_only(&r_loop));
     loop_detect_visitor<resonly_graph_t> findloops;
 
     // supply edge color map for algorithm

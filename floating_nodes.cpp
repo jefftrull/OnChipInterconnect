@@ -74,7 +74,7 @@ int main() {
 
     // run connected components on filtered (resistor-only) graph
     typedef filtered_graph<ckt_graph_t, resistors_only> resonly_graph_t;
-    filtered_graph<ckt_graph_t, resistors_only> res_graph(float_n, resistors_only(&float_n));
+    resonly_graph_t res_graph(float_n, resistors_only(&float_n));
 
    // define required color and component property maps
    typedef resonly_graph_t::vertices_size_type comp_number_t;
