@@ -24,6 +24,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+#ifndef CKT_MATRIX_H
+#define CKT_MATRIX_H
+
 // Units are handy for remembering branch components
 #include <boost/units/systems/si/resistance.hpp>
 #include <boost/units/systems/si/capacitance.hpp>
@@ -97,3 +100,4 @@ private:
     ckt_graph_t const* graph_;   // cannot be ref due to default ctor requirement
 };
 
+#endif // CKT_MATRIX_H
