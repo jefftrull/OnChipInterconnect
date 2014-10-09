@@ -50,8 +50,31 @@ typedef quantity<si::capacitance, double> capacitor_edge_t;
 typedef boost::variant<resistor_edge_t, capacitor_edge_t> edge_property_t;
 
 // the circuit itself
-typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS,
-                              vertex_property_t, edge_property_t> ckt_graph_t;
+// only difference vs. its parent adjacency_list is ground node is always defined
+struct ckt_graph_t :  boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS,
+                                            vertex_property_t, edge_property_t> {
+    ckt_graph_t() {
+        gnd_ = add_vertex("gnd", *this);
+    }
+    vertex_descriptor gnd() const {
+        return gnd_;
+    }
+
+private:
+    vertex_descriptor gnd_;
+};
+
+// override out_edges so gnd is always a "sink"
+std::pair<ckt_graph_t::out_edge_iterator, ckt_graph_t::out_edge_iterator>
+out_edges(ckt_graph_t::vertex_descriptor u, ckt_graph_t const& g) {
+    if (u == g.gnd()) {
+        // return empty range
+        return std::make_pair(ckt_graph_t::out_edge_iterator(),
+                              ckt_graph_t::out_edge_iterator());
+    } else {
+        return boost::out_edges(u, g);
+    }
+}
 
 // filter predicate for resistor-only graphs
 struct is_resistor : boost::static_visitor<bool> {

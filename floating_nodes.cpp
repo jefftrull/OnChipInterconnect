@@ -41,7 +41,6 @@ int main() {
     // A circuit with floating nodes (one dangling, one shared between two other nodes)
     ckt_graph_t float_n;
 
-               add_vertex("gnd", float_n);
     auto d1  = add_vertex("d1", float_n);
     auto n2  = add_vertex("n2", float_n);
     auto n3  = add_vertex("n3", float_n);
@@ -96,7 +95,7 @@ int main() {
    for (auto comp_entry : comps) {
        if ((float_n[comp_entry.first] == "d1") ||
            (float_n[comp_entry.first] == "d2") ||
-           (float_n[comp_entry.first] == "gnd")) {
+           (comp_entry.first == float_n.gnd())) {
            driven_components.insert(comp_entry.second);
        }
    }

@@ -67,7 +67,7 @@ int main() {
     // First, one with a resistor loop
     ckt_graph_t r_loop;
     {
-        auto gnd = add_vertex("gnd", r_loop);
+        auto gnd = r_loop.gnd();
         auto n1  = add_vertex("n1", r_loop);
         auto n2  = add_vertex("n2", r_loop);     // starting point for resistor loop
         add_edge(n1, n2, 100.*kohm, r_loop);
