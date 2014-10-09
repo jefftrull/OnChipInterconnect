@@ -25,9 +25,11 @@ THE SOFTWARE.
 */
 
 #include <iostream>
+#include <fstream>
 
 #include <boost/graph/visitors.hpp>
 #include <boost/graph/undirected_dfs.hpp>
+#include <boost/graph/graphviz.hpp>
 #include <boost/units/systems/si/time.hpp>
 
 #include "ckt_graph.h"
@@ -172,6 +174,14 @@ int main() {
 
     // coupling capacitor between the two signal traces
     add_edge(n2, n6, 100.0*ff,     coupling_test);
+
+    // debug output via Dot
+    /*
+    ofstream dbg("/tmp/coupling_test.dot");
+    write_graphviz(dbg, coupling_test,
+                   make_label_writer(get(vertex_bundle, coupling_test)),
+                   make_label_writer(get(edge_bundle, coupling_test)));
+    */
 
     // calculate Elmore delay
     // Create visitors
