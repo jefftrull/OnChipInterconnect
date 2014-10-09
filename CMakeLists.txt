@@ -14,6 +14,6 @@ if (CMAKE_COMPILER_IS_GNUCC OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
   add_definitions(-std=c++0x)             # enable C++11
 endif()
 
-foreach( excpp resistive_loops floating_nodes rmst )
+foreach( excpp resistive_loops floating_nodes rmst graph_elmore )
   add_executable( ${excpp} ${excpp}.cpp )
 endforeach()
