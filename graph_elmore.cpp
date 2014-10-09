@@ -192,7 +192,12 @@ int main() {
     delay_calculating_visitor<resonly_graph_t>
                                      delvis(downstream_caps, delays);
 
-    undirected_dfs(res_graph, edge_color_map(cpmap).visitor(delvis).root_vertex(vagg));
+    // create *vertex* color map for depth_first_visit
+    auto vindex_map = typed_identity_property_map<size_t>();
+    vector<default_color_type> colorvec(num_vertices(coupling_test));   // underlying storage
+    auto cvpmap = make_iterator_property_map(colorvec.begin(), vindex_map);
+
+    depth_first_visit(res_graph, vagg, delvis, cvpmap);
 
     cout << "Elmore delay of aggressor net: " << delays.at(n3) << endl;
 
