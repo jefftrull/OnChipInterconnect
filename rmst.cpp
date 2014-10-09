@@ -180,8 +180,7 @@ int main() {
         [&pdg](edge_t e) -> int {
             auto coord1 = pdg[source(e, pdg)];
             auto coord2 = pdg[target(e, pdg)];
-            return ((coord1.first - coord2.first) * (coord1.first - coord2.first)) +
-                ((coord1.second - coord2.second) * (coord1.second - coord2.second));
+            return abs(coord1.first - coord2.first) + abs(coord1.second - coord2.second);
         });    
 
     // call Prim
