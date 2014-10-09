@@ -60,12 +60,24 @@ void stamp_i(M& matrix, std::size_t vnodeno, std::size_t istateno)
    matrix(istateno, vnodeno) = -1;
 }
 
+// Attributes of matrices
 template<class M>
 bool isSingular(const M& m) {
 
    assert(m.rows() == m.cols());   // singularity has no meaning for a non-square matrix
    return (m.fullPivLu().rank() != m.rows());   // interpretation: "not of full rank"
 
+}
+
+template<class M>
+bool canLDLTDecompose(const M& m) {
+   // m must be positive or negative semidefinite, which means its eigenvalues
+   // must all be real-valued, and either all non-positive or all non-negative.
+   // Use the magic of Eigen reductions to implement:
+   auto eigenvalues = Eigen::EigenSolver<M>(m).eigenvalues();
+   return (eigenvalues.array().imag() == 0.0).all() &&   // all real
+      ((eigenvalues.array().real() >= 0.0).all() ||      // non-negative
+       (eigenvalues.array().real() <= 0.0).all());       // or non-positive
 }
 
 // Convenience template for using Eigen's special allocator with vectors

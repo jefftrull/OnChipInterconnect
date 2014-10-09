@@ -25,6 +25,7 @@ THE SOFTWARE.
 */
 
 #include <iostream>
+#include <boost/numeric/odeint.hpp>
 
 #include "ckt_matrix.h"
 
@@ -83,11 +84,74 @@ struct coupling_circuit_t {
         // cross-check: compute moments
         Matrix<double, 2, 2> E = Matrix<double, 2, 2>::Zero();   // feedthrough term we don't have
         auto block_moments = moments(G, C, B, L, E, 2);
-        std::cout << "moment 0=\n" << block_moments[0] << std::endl;
-        std::cout << "moment 1=\n" << block_moments[1] << std::endl;
+        std::cerr << "moment 0=\n" << block_moments[0] << std::endl;
+        std::cerr << "moment 1=\n" << block_moments[1] << std::endl;
+
+        // Now regularize.  Results are of dynamic (not initially known) size
+        MatrixXd Greg, Creg;             // regularized versions of C and G
+        Matrix<double, Dynamic, 2> Breg, Lreg;
+        std::tie(Greg, Creg, Breg, Lreg) = regularize(G, C, B, L);
+
+        // Finally, put in a form suitable for simulation, by transforming
+        // C*dX/dt = -G*X + B*u
+        // into
+        // dX/dt   = -C.inv()*G*X + C.inv()*B*u
+        // Wikipedia says Cholesky decomposition "roughly twice as efficient" as LU:
+        assert(canLDLTDecompose(Creg));            // make sure we can use it
+        drift_  = Creg.ldlt().solve(-1.0 * Greg);  // -Creg.inv()*Greg
+        input_  = Creg.ldlt().solve(Breg);         // Creg.inv()*Breg
+        output_ = Lreg.transpose();
+
     }
+
+    // perform dX/dt calculation for ODEInt
+    typedef std::vector<double> state_t;
+    void operator()(state_t const& x, state_t& dxdt, double) const {
+        using namespace Eigen;
+        // need to wrap std::vector state types for Eigen to use
+        Map<const Matrix<double, Dynamic, 1>> xvec(x.data(), x.size());
+        Map<Matrix<double, Dynamic, 1>>       result(dxdt.data(), x.size());
+
+        // simulating step function at time 0 for simplicity
+        Matrix<double, 2, 1> u; u << 1.0, 0.0;   // aggressor voltage 1V, victim quiescent
+        result = drift_ * xvec + input_ * u;
+    }
+        
+    // turns internal state into output by applying transformed L matrix
+    std::vector<double> state2output(state_t const& x) const {
+        using namespace Eigen;
+        std::vector<double> result(2);
+        Map<const Matrix<double, Dynamic, 1> > xvec(x.data(), x.size());
+        Map<Matrix<double, 2, 1> >             ovec(result.data());
+        ovec = output_ * xvec;
+        return result;
+    }
+
+    size_t statecnt() const {
+        return drift_.rows();
+    }
+
+private:
+    Eigen::Matrix<double, Eigen::Dynamic, 2>              input_;
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> drift_;
+    Eigen::Matrix<double, 2, Eigen::Dynamic>             output_;
 };
 
 int main() {
+    using namespace std;
+
+    // instantiate circuit
     coupling_circuit_t coupling_test;
+
+    // simulate
+    typedef coupling_circuit_t::state_t state_t;
+    state_t         x(coupling_test.statecnt(), 0.0);   // initial conditions = all zero
+
+    using boost::numeric::odeint::integrate;
+
+    integrate( coupling_test, x, 0.0, 1e-9, 1e-12,
+               [&](state_t const& x, double t) {
+                   auto outputs = coupling_test.state2output(x);
+                   cout << t << " " << outputs[0] << " " << outputs[1] << endl;
+               });
 }
