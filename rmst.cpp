@@ -194,8 +194,8 @@ int main() {
     auto vitpair = vertices(pdg);
     for (auto v : make_iterator_range(vitpair.first, vitpair.second)) {
         // SVG wants positive numbers, and the Y coordinate is canvas style (reversed from Cartesian)
-        // so we will hack the numbers a bit to make it match our inputs:
-        // scale by 3X, mirror Y axis, and add 600 to both
+        // so we will transform the data en route to the display for viewability:
+        // scale by 2X, mirror Y axis, and add 400 to both
         int x2 = 400 + 2*pdg[v].first;
         int y2 = 400 - 2*pdg[v].second;
         if (predvec[v] == v) {
