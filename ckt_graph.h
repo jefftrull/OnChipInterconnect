@@ -48,9 +48,9 @@ typedef std::string vertex_property_t;
 
 // edge (circuit component) properties are the type (resistor or capacitor) with the component value
 using namespace boost::units;
-typedef quantity<si::resistance, double> resistor_edge_t;
-typedef quantity<si::capacitance, double> capacitor_edge_t;
-typedef boost::variant<resistor_edge_t, capacitor_edge_t> edge_property_t;
+typedef quantity<si::resistance, double> resistor_value_t;
+typedef quantity<si::capacitance, double> capacitor_value_t;
+typedef boost::variant<resistor_value_t, capacitor_value_t> edge_property_t;
 
 // the circuit itself
 // only difference vs. its parent adjacency_list is ground node is always defined
@@ -81,10 +81,10 @@ out_edges(ckt_graph_t::vertex_descriptor u, ckt_graph_t const& g) {
 
 // filter predicate for resistor-only graphs
 struct is_resistor : boost::static_visitor<bool> {
-  bool operator()(resistor_edge_t const&) const {
+  bool operator()(resistor_value_t const&) const {
     return true;
   }
-  bool operator()(capacitor_edge_t const&) const {
+  bool operator()(capacitor_value_t const&) const {
     return false;
   }
 };

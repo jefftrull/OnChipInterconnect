@@ -44,16 +44,16 @@ struct cap_summing_visitor : boost::default_dfs_visitor {
     // This edge variant visitor returns the correct contribution for an edge
     // to a downstream node: the value on the edge, if a capacitor, or
     // the supplied downstream capacitance, if a resistor.
-    struct cap_summer : boost::static_visitor<capacitor_edge_t> {
-        capacitor_edge_t operator()(resistor_edge_t const&) const {
+    struct cap_summer : boost::static_visitor<capacitor_value_t> {
+        capacitor_value_t operator()(resistor_value_t const&) const {
             return downstream_;   // count downstream, not edge
         }
-        capacitor_edge_t operator()(capacitor_edge_t const& c) const {
+        capacitor_value_t operator()(capacitor_value_t const& c) const {
             return c;             // count edge but not downstream (i.e., lump to gnd)
         }
-        cap_summer(capacitor_edge_t downstream) : downstream_(downstream) {}
+        cap_summer(capacitor_value_t downstream) : downstream_(downstream) {}
     private:
-        capacitor_edge_t downstream_;
+        capacitor_value_t downstream_;
     };
 
     void tree_edge(edge_t e, Graph const& g) {
@@ -67,13 +67,13 @@ struct cap_summing_visitor : boost::default_dfs_visitor {
         // is only due to the order in which we encountered vertices
         // a "tree edge" is downstream, and a "back edge" is upstream
 
-        downstream_caps_[u] = capacitor_edge_t();
+        downstream_caps_[u] = capacitor_value_t();
         for (auto e : boost::make_iterator_range(out_edges(u, g))) {
             // detect back edge, i.e., an edge to an already-visited node
             // this won't work correctly for circuits with resistive loops
             if ((predecessors_[target(e, g)] == u) || (target(e, g) == g.gnd())) {
                 // our first time at this node, OR the node is gnd, in which case this is normal
-                capacitor_edge_t contr = boost::apply_visitor(cap_summer(downstream_caps_[target(e, g)]), g[e]);
+                capacitor_value_t contr = boost::apply_visitor(cap_summer(downstream_caps_[target(e, g)]), g[e]);
                 downstream_caps_[u] += contr;
             }
         }
@@ -81,11 +81,11 @@ struct cap_summing_visitor : boost::default_dfs_visitor {
 
     // finish_edge never seems to get called
 
-    cap_summing_visitor(std::vector<capacitor_edge_t>& capsvec)
+    cap_summing_visitor(std::vector<capacitor_value_t>& capsvec)
         : downstream_caps_(capsvec), predecessors_(capsvec.size()) {}
 
 private:
-    std::vector<capacitor_edge_t>& downstream_caps_;
+    std::vector<capacitor_value_t>& downstream_caps_;
     std::vector<vertex_t> predecessors_;
 };
 
@@ -103,13 +103,13 @@ struct delay_calculating_visitor : boost::default_dfs_visitor {
         delays_[u] = delay_t();
     }
 
-    struct res_summer : boost::static_visitor<resistor_edge_t> {
-        resistor_edge_t operator()(resistor_edge_t const& r) const {
+    struct res_summer : boost::static_visitor<resistor_value_t> {
+        resistor_value_t operator()(resistor_value_t const& r) const {
             return r;
         }
-        resistor_edge_t operator()(capacitor_edge_t const&) const {
+        resistor_value_t operator()(capacitor_value_t const&) const {
             assert(0);   // program bug - we should operate on a filtered graph
-            return resistor_edge_t();
+            return resistor_value_t();
         }
     };
 
@@ -123,12 +123,12 @@ struct delay_calculating_visitor : boost::default_dfs_visitor {
         // Resistive loops will break this algorithm - you could put a check here
     }
 
-    delay_calculating_visitor(std::vector<capacitor_edge_t>& capsvec,
+    delay_calculating_visitor(std::vector<capacitor_value_t>& capsvec,
                               std::vector<delay_t>& delays)
         : downstream_caps_(capsvec), delays_(delays) {}
 
 private:
-    std::vector<capacitor_edge_t>& downstream_caps_;   // bottom-up
+    std::vector<capacitor_value_t>& downstream_caps_;   // bottom-up
     std::vector<delay_t>&          delays_;            // top-down
 };
 
@@ -175,7 +175,7 @@ int main() {
 
     // calculate Elmore delay
     // Create visitors
-    vector<capacitor_edge_t> downstream_caps(num_vertices(coupling_test));
+    vector<capacitor_value_t> downstream_caps(num_vertices(coupling_test));
     cap_summing_visitor<ckt_graph_t> capvis(downstream_caps);
 
     // undirected DFS requires edge color map
