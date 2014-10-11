@@ -195,9 +195,9 @@ int main() {
     for (auto v : make_iterator_range(vitpair.first, vitpair.second)) {
         // SVG wants positive numbers, and the Y coordinate is canvas style (reversed from Cartesian)
         // so we will transform the data en route to the display for viewability:
-        // scale by 2X, mirror Y axis, and add 400 to both
-        int x2 = 400 + 2*pdg[v].first;
-        int y2 = 400 - 2*pdg[v].second;
+        // scale by 2X, mirror Y axis, and add 250 to both
+        int x2 = 250 + 2*pdg[v].first;
+        int y2 = 250 - 2*pdg[v].second;
         if (predvec[v] == v) {
             // Root.  Make a red circle
             cout << "    <circle cx=\"" << x2 << "\" cy=\"" << y2 << "\" r=\"10\" style=\"fill:#cc0000\"/>" << endl;
@@ -208,11 +208,11 @@ int main() {
     }
     // Go back and add lines on top of the circles (for visibility)
     for (auto v : make_iterator_range(vitpair.first, vitpair.second)) {
-        int x2 = 400 + 2*pdg[v].first;
-        int y2 = 400 - 2*pdg[v].second;
+        int x2 = 250 + 2*pdg[v].first;
+        int y2 = 250 - 2*pdg[v].second;
         if (predvec[v] != v) {
-            int x1 = 400 + 2*pdg[predvec[v]].first;
-            int y1 = 400 - 2*pdg[predvec[v]].second;
+            int x1 = 250 + 2*pdg[predvec[v]].first;
+            int y1 = 250 - 2*pdg[predvec[v]].second;
             // Make a line to the successor node
             cout << "    <line x1=\"" << x1 << "\" y1=\"" << y1 << "\" x2=\"" << x2 << "\" y2=\"" << y2 << "\" style=\"stroke:#666666; stroke-width:3px\"/>" << endl;
         }
