@@ -49,19 +49,21 @@ int main() {
     // a first driver
     add_edge(d1, n2, kohm, float_n);   // initial resistor
     // in parallel with d1->n2, two capacitors in series
-    auto n1a = add_vertex("n1a", float_n);
-    add_edge(d1, n1a, ff, float_n);   // node n1a floats
-    add_edge(n1a, n2, ff, float_n);
+    auto n1 = add_vertex("n1", float_n);
+    add_edge(d1, n1, ff, float_n);   // node n1 floats
+    add_edge(n1, n2, ff, float_n);
     add_edge(n2, n3, kohm, float_n);
-    auto n3a = add_vertex("n3a", float_n);
-    add_edge(n3, n3a, ff, float_n);   // n3a floats
+    auto n4 = add_vertex("n4", float_n);
+    add_edge(n3, n4, ff, float_n);   // n4 floats
+    auto n5 = add_vertex("n5", float_n);
+    add_edge(n4, n5, kohm, float_n); // n5 floats despite being resistor-connected
 
     // second driver
     auto d2 = add_vertex("d2", float_n);
-    auto n4 = add_vertex("n4", float_n);
-    add_edge(d2, n4, kohm, float_n);
-    // n4 couples to n3 of the other net
-    add_edge(n4, n3, ff, float_n);
+    auto n6 = add_vertex("n6", float_n);
+    add_edge(d2, n6, kohm, float_n);
+    // n6 couples to n4 of the other net, but that doesn't stop n4 from floating
+    add_edge(n6, n4, ff, float_n);
 
     // Floating nodes are unreachable via resistors from gnd or any driver.  That is, they
     // are either disconnected from any edge, or have at least one capacitor in
