@@ -99,9 +99,12 @@ int main() {
     using namespace boost::spirit::qi;
     symbols<char, std::string> name_map_symtab;
 
+    typedef rule<spirit::istream_iterator, std::string()> name_rule;
+    name_rule nm_num  = '*' >> +digit;
+    name_rule nm_name = +char_("a-zA-Z0-9/_");
     phrase_parse(nmbeg, end,                                    // input range
                  lit("*NAME_MAP") >>                            // grammar begins
-                 *('*' >> as_string[lexeme[+digit]] >> as_string[lexeme[+char_("a-zA-Z0-9/_")]])[  // line
+                 *(nm_num >> nm_name)[
                      phx::bind(name_map_symtab.add, _1, _2)],   // action for line
                  space);                                        // "skipper"
 
