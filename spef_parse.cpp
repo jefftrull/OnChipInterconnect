@@ -121,13 +121,12 @@ int main() {
     stringstream rstream(res_section_text);
     rstream.unsetf(ios::skipws);
     spirit::istream_iterator rbeg(rstream), rend;
+    name_rule node_with_symtab = '*' >> name_map_symtab >> char_(':') >> +alnum;
     phrase_parse(rbeg, rend,
                  lit("*RES") >>
-                 *(omit[uint_] >>
-                   '*' >> as_string[name_map_symtab >> char_(':') >> lexeme[+alnum]] >>
-                   '*' >> as_string[name_map_symtab >> char_(':') >> lexeme[+alnum]] >>
-                   double_)[phx::bind(&ckt_builder::add_component, phx::ref(builder),
-                                      _1, _2, _3 * phx::cref(r_unit))]
+                 *(omit[uint_] >> node_with_symtab >> node_with_symtab >> double_)[
+                     phx::bind(&ckt_builder::add_component, phx::ref(builder),
+                               _1, _2, _3 * phx::cref(r_unit))]
                  >> lit("*END"),
                  space);
 
