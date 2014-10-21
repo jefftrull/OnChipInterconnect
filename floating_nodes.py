@@ -25,12 +25,12 @@
 # THE SOFTWARE.
 
 # requires "graph_tool" and "quantities" libraries
-from graph_tool.all import *
+import graph_tool.topology
 import quantities as pq
 
 # Create a special graph for circuits: undirected, with special gnd node with no out edges
 
-class CktGraph(Graph):
+class CktGraph(graph_tool.Graph):
     "storage for circuits"
 
     # Monkey patch out_edges method for ground node
@@ -38,7 +38,7 @@ class CktGraph(Graph):
         return []
 
     def __init__(self):
-        Graph.__init__(self, directed=False)
+        graph_tool.Graph.__init__(self, directed=False)
         self.vname = self.new_vertex_property("string")
         self.gnd = self.add_node("gnd")
         self.gnd.out_edges = self.__gnd_out_edges
@@ -87,10 +87,10 @@ if __name__ == "__main__":
     float_n.add_comp(n6, n4, ff)
 
     # Create filtered graph
-    fg = GraphView(float_n, efilt=isResistor(float_n))
+    fg = graph_tool.GraphView(float_n, efilt=isResistor(float_n))
 
     # Run the algorithm
-    comp, hist = label_components(fg)
+    comp, hist = graph_tool.topology.label_components(fg)
 
     # Find the components containing d1, d2, and gnd
     driven_components = set()
