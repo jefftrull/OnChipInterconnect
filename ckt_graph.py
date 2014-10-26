@@ -29,15 +29,10 @@ import quantities as pq
 class CktGraph(graph_tool.Graph):
     "storage for circuits"
 
-    # Monkey patch out_edges method for ground node
-    def __gnd_out_edges(self):
-        return []
-
     def __init__(self):
-        graph_tool.Graph.__init__(self, directed=False)
+        graph_tool.Graph.__init__(self, directed=True)
         self.vname = self.new_vertex_property("string")
         self.gnd = self.add_node("gnd")
-        self.gnd.out_edges = self.__gnd_out_edges
         self.ecomp = self.new_edge_property("object")
 
     def add_node(self, name):
@@ -47,6 +42,9 @@ class CktGraph(graph_tool.Graph):
 
     def add_comp(self, n1, n2, value):
         self.ecomp[self.add_edge(n1, n2)] = value
+        # prevent algorithms from searching through the ground node
+        if (n2 != self.gnd):
+            self.ecomp[self.add_edge(n2, n1)] = value
         
 # filtering graph for resistor edges
 class isResistor:
