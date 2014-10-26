@@ -28,37 +28,7 @@
 import graph_tool.topology
 import quantities as pq
 
-# Create a special graph for circuits: undirected, with special gnd node with no out edges
-
-class CktGraph(graph_tool.Graph):
-    "storage for circuits"
-
-    # Monkey patch out_edges method for ground node
-    def __gnd_out_edges(self):
-        return []
-
-    def __init__(self):
-        graph_tool.Graph.__init__(self, directed=False)
-        self.vname = self.new_vertex_property("string")
-        self.gnd = self.add_node("gnd")
-        self.gnd.out_edges = self.__gnd_out_edges
-        self.ecomp = self.new_edge_property("object")
-
-    def add_node(self, name):
-        v = self.add_vertex()
-        self.vname[v] = name
-        return v
-
-    def add_comp(self, n1, n2, value):
-        self.ecomp[self.add_edge(n1, n2)] = value
-        
-# filtering graph for resistor edges
-class isResistor:
-    def __init__(self, g):
-        self.graph = g
-
-    def __call__(self, e):
-        return self.graph.ecomp[e].units == pq.ohm
+from ckt_graph import CktGraph, isResistor
 
 if __name__ == "__main__":
     # floating node testcase
