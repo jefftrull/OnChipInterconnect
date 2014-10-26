@@ -123,10 +123,6 @@ def regularize(G, C, B, L):
 
     return (Greg, Creg, Breg, Lreg)
 
-def func(y, t0):
-    # derivative is linear to produce a parabolic output
-    return [t0]
-
 class mna_ckt_fun(object):
     # class to compute dX/dt given X and t
     # that's C^-1*(-G) + C^-1*B*u
