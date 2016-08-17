@@ -90,7 +90,7 @@ struct is_resistor : boost::static_visitor<bool> {
 };
 
 struct resistors_only {
-    resistors_only() {}
+    resistors_only() = default;
     resistors_only(ckt_graph_t const* g) : graph_(g) {}
     bool operator()(ckt_graph_t::edge_descriptor e) const {
         // access edge property (res/cap variant) and apply predicate visitor

@@ -47,7 +47,9 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 
 int main() {
-    std::string testspef(
+    using namespace std;
+
+    string testspef(
         "*RES\n"
         "1 *1087:4 *223:B 1.2\n"
         "2 *1087:3 *1087:4 3.12\n"
@@ -55,7 +57,7 @@ int main() {
 
     using namespace boost::spirit::qi;
     auto beg = testspef.begin();
-    rule<std::string::iterator,
+    rule<string::iterator,
          resistor_t(),
          ascii::space_type> rline =
         uint_ >>
@@ -63,22 +65,16 @@ int main() {
         "*" >> uint_ >> ":" >> +ascii::alnum >>
         double_ ;
         
-    std::vector<resistor_t> resistors;
-    if (!phrase_parse(
+    vector<resistor_t> resistors;
+    phrase_parse(
         beg, testspef.end(),
         lit("*RES") >> *rline,
         ascii::space,
-        resistors)) {
-        std::cerr << "parsing failed with remaining input |" << std::string(beg, testspef.end()) << "|\n";
-    }
-
-    if (beg != testspef.end()) {
-        std::cerr << "parse succeeded but we have extra input |" << std::string(beg, testspef.end()) << "|\n";
-    }
+        resistors);
 
     for (auto const& r : resistors) {
-        std::cout << r.value << " from " << r.net1 << ":" << r.node1;
-        std::cout            << " to "   << r.net2 << ":" << r.node2 << "\n";
+        cout << r.value << " from " << r.net1 << ":" << r.node1;
+        cout            << " to "   << r.net2 << ":" << r.node2 << "\n";
     }
 }
 
