@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 2.8)
 
-find_package( Boost 1.56 REQUIRED )
+find_package( Boost 1.61 REQUIRED COMPONENTS context )
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 if (MSVC)
   # prevent auto linking
@@ -14,9 +14,11 @@ if (CMAKE_COMPILER_IS_GNUCC OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
   add_definitions(-std=c++0x)             # enable C++11
 endif()
 
-foreach( excpp resistive_loops floating_nodes rmst graph_elmore spef_rline_parse spef_parse )
+foreach( excpp resistive_loops floating_nodes rmst graph_elmore spef_rline_parse spef_rline_parse_coro spef_parse )
   add_executable( ${excpp} ${excpp}.cpp )
 endforeach()
+
+target_link_libraries( spef_rline_parse_coro ${Boost_LIBRARIES} )
 
 # eigen-dependent code
 find_package( Eigen3 )
