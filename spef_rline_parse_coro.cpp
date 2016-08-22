@@ -25,7 +25,6 @@ THE SOFTWARE.
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
-#include <boost/spirit/include/phoenix.hpp>
 
 #include <boost/coroutine2/all.hpp>
 
@@ -69,13 +68,15 @@ int main() {
         
     using namespace boost::coroutines2;
     using coro_t = asymmetric_coroutine<resistor_t>;
-    namespace phx = boost::phoenix;
     auto source_fn =
         [&](coro_t::push_type & sink) {
         auto beg = testspef.begin();
         phrase_parse(
             beg, testspef.end(),
-            lit("*RES") >> *rline[phx::bind(phx::ref(sink), _1)],
+            lit("*RES") >> *rline[(
+                [&](auto const& v) {
+                    sink(v);
+                })],
             ascii::space);
     };
     coro_t::pull_type resistors(source_fn);
