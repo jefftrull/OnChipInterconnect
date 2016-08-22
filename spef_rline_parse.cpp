@@ -61,8 +61,8 @@ int main() {
          resistor_t(),
          ascii::space_type> rline =
         uint_ >>
-        "*" >> uint_ >> ":" >> +ascii::alnum >>
-        "*" >> uint_ >> ":" >> +ascii::alnum >>
+        "*" >> uint_ >> ":" >> lexeme[+ascii::alnum] >>
+        "*" >> uint_ >> ":" >> lexeme[+ascii::alnum] >>
         double_ ;
         
     vector<resistor_t> resistors;
