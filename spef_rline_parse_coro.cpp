@@ -74,8 +74,8 @@ int main() {
         phrase_parse(
             beg, testspef.end(),
             lit("*RES") >> *rline[(
-                [&](auto const& v) {
-                    sink(v);
+                [&](resistor_t const& r) {
+                    sink(r);
                 })],
             ascii::space);
     };
