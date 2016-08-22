@@ -48,9 +48,9 @@ typedef std::string vertex_property_t;
 
 // edge (circuit component) properties are the type (resistor or capacitor) with the component value
 using namespace boost::units;
-typedef quantity<si::resistance, double> resistor_value_t;
-typedef quantity<si::capacitance, double> capacitor_value_t;
-typedef boost::variant<resistor_value_t, capacitor_value_t> edge_property_t;
+using resistor_value_t = quantity<si::resistance, double>;
+using capacitor_value_t = quantity<si::capacitance, double>;
+using edge_property_t = boost::variant<resistor_value_t, capacitor_value_t>;
 
 // the circuit itself
 // only difference vs. its parent adjacency_list is ground node is always defined
