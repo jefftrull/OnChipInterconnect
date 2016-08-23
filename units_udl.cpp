@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <boost/units/systems/si/capacitance.hpp>
 #include <boost/units/systems/si/prefixes.hpp>
 #include <boost/units/systems/si/io.hpp>
+#include <boost/units/base_units/us/pound_force.hpp>
 
 using boost::units::quantity;
 using namespace boost::units::si;
@@ -39,10 +40,29 @@ quantity<capacitance> operator"" _ff(long double v) {
     return quantity<capacitance>(v * femto * farads);
 }
 
+quantity<boost::units::si::time> operator"" _ms(long double v) {
+    return quantity<boost::units::si::time>(v * milli * seconds);
+}
+
+quantity<boost::units::si::force>
+operator"" _lbf(long double v) {
+    using lbf = boost::units::us::pound_force_base_unit::unit_type;
+    return quantity<boost::units::si::force>(v * lbf());
+}
+
+quantity<boost::units::si::force>
+operator"" _N(long double v) {
+    return quantity<boost::units::si::force>(v * newton);
+}
+
 int main() {
     using boost::units::si::time;
     quantity<time> t = 2._kohm * 6._ff;
-    std :: cout << " time constant = " << t << std :: endl ;
+    using boost::units::engineering_prefix;
+    std::cout << "time constant = " << engineering_prefix << t << std :: endl ;
+    auto f = 1._lbf + 1._N;
+    std::cout << "force = " << f << "\n";
+
 }
 
 
