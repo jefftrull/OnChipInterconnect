@@ -75,7 +75,7 @@ int main() {
     // component as a driver or gnd are floating.
 
     // run connected components on filtered (resistor-only) graph
-    typedef filtered_graph<ckt_graph_t, resistors_only> resonly_graph_t;
+    using resonly_graph_t = filtered_graph<ckt_graph_t, resistors_only>;
     resonly_graph_t res_graph(float_n, resistors_only(&float_n));
 
    // define required color and component property maps
