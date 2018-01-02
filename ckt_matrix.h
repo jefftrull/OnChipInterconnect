@@ -143,7 +143,7 @@ regularize(Eigen::Matrix<Float, scount, scount> const & G,
     // 1. Generate permutation matrix to move zero rows to the bottom
     PermutationMatrix<scount, scount, std::size_t> permut;
     permut.setIdentity(C.rows());      // start with null permutation
-    std::size_t i, j;
+    Eigen::Index i, j;
     for (i = 0, j=(C.rows()-1); i < j;) {
         // loop invariant: rows > j are all zero; rows < i are not
         while ((i < C.rows()) && !zero_rows(i)) ++i;
